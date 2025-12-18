@@ -1,22 +1,30 @@
 const express = require("express");
+const fetch = require("node-fetch");
 
 const app = express();
 const PORT = process.env.PORT || 10000;
 
-// test route
 app.get("/", (req, res) => {
-  res.send("Giving Sphere backend is running");
+  res.send("Giving Sphere Backend is running");
 });
 
-// gamepass route
-app.get("/passes/:userId", (req, res) => {
+app.get("/passes/:userId", async (req, res) => {
   const userId = req.params.userId;
 
-  // TEMP test response (we will connect Roblox catalog later)
-  res.json({
-    userId: userId,
-    passes: []
-  });
+  try {
+    const url =
+      `https://catalog.roblox.com/v1/search/items/details` +
+      `?Category=Pass&CreatorType=User&CreatorTargetId=${userId}` +
+      `&SalesTypeFilter=1&Limit=30`;
+
+    const response = await fetch(url);
+    const data = await response.json();
+
+    res.json(data);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch gamepasses" });
+  }
 });
 
 app.listen(PORT, () => {
