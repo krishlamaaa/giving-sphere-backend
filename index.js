@@ -1,25 +1,27 @@
-import express from "express";
-import fetch from "node-fetch";
-
+const express = require("express");
 const app = express();
-const PORT = process.env.PORT || 3000;
 
+const PORT = process.env.PORT || 10000;
+
+// test route (important)
 app.get("/", (req, res) => {
-  res.send("Giving Sphere backend is running");
+  res.send("Giving Sphere Backend is running");
 });
 
-app.get("/passes/:userId", async (req, res) => {
-  try {
-    const response = await fetch(
-      `https://games.roblox.com/v1/users/${req.params.userId}/games`
-    );
-    const data = await response.json();
-    res.json(data);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+// PASSES ROUTE (THIS IS WHAT ROBLOX NEEDS)
+app.get("/passes/:userId", (req, res) => {
+  const userId = req.params.userId;
+
+  // example response (you can change later)
+  res.json({
+    userId: userId,
+    passes: [
+      { id: 123456, price: 10 },
+      { id: 789012, price: 50 }
+    ]
+  });
 });
 
 app.listen(PORT, () => {
-  console.log("Server running on port", PORT);
+  console.log("Server running on port " + PORT);
 });
